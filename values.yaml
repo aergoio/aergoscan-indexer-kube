@@ -1,0 +1,27 @@
+namespace: local
+
+deployment:
+  type: blue
+  replicaCount: 1
+  image:
+    repository: aergo/indexer2
+    tag: "2.4.0"
+
+indexer:
+  command:
+    url:
+      aergo:
+        node: aergo-node1:7845
+      db:
+        dns: aergoscan-es
+        port: "9200"
+    prefix: local
+    mode: all
+    from: 0
+    to: 0
+    address:
+      contract: AmhSdDy25j4zi1uedemjta3dTnFnkAHR26nWMve6ETj88ejy4XBK
+      token: AmhZ3bCN95LiryWkJAj1ZVyP47rp1heuTQHXGEU7MMLRrxtrG76A
+    cccv: local
+    cluster:
+      enable: false

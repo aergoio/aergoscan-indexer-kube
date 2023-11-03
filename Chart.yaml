@@ -1,0 +1,6 @@
+apiVersion: v2
+name: aergoscan-indexer
+description: A Helm chart for aergoscan indexer
+type: application
+version: 0.0.1
+appVersion: "2.3.0"

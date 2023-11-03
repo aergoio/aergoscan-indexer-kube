@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    environment: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      environment: {{ .Values.namespace }}
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        environment: {{ .Values.namespace }}
+        app: {{ .Release.Name }}
+    spec:
+{{- if ne .Values.namespace "local" }}
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: {{ .Values.deployment.nodeSelector.eks.nodeGroup }}
+{{- end }}
+      containers:
+        - name: {{ .Release.Name }}
+          image: {{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}
+          securityContext:
+            runAsUser: 1000
+          command:
+            - indexer
+            - --aergo={{ .Values.indexer.command.url.aergo.node }}
+            - --dburl={{ .Values.indexer.command.url.db.dns }}-{{ .Values.deployment.type }}:{{ .Values.indexer.command.url.db.port }}
+            - --prefix={{ .Values.indexer.command.prefix }}
+            - --mode={{ .Values.indexer.command.mode }}
+            - --from={{ .Values.indexer.command.from }}
+            - --to={{ .Values.indexer.command.to }}
+            - --contract={{ .Values.indexer.command.address.contract }}
+            - --token={{ .Values.indexer.command.address.token }}
+            - --cccv={{ .Values.indexer.command.cccv }}
+            - --cluster={{ .Values.indexer.command.cluster.enable }}
+{{- if ne .Values.namespace "local" }}
+          resources:
+            requests:
+              cpu: {{ .Values.deployment.containers.default.resources.requests.cpu }}
+              memory: {{ .Values.deployment.containers.default.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.deployment.containers.default.resources.limits.cpu }}
+              memory: {{ .Values.deployment.containers.default.resources.limits.memory }}
+{{- end }}
+
