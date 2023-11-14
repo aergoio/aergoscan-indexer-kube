@@ -26,6 +26,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: Always
           securityContext:
             runAsUser: 1000
           command:
